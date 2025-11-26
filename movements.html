@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimientos - YuzApp</title>
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button class="menu-toggle" id="menuToggle">
+        <ion-icon name="menu-outline"></ion-icon>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">
+                <ion-icon name="shirt-outline"></ion-icon>
+                YuzApp
+            </h1>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-link">
+                <ion-icon name="stats-chart-outline"></ion-icon>
+                <span>Dashboard</span>
+            </a>
+            <a href="products.html" class="sidebar-link">
+                <ion-icon name="cube-outline"></ion-icon>
+                <span>Productos</span>
+            </a>
+            <a href="movements.html" class="sidebar-link active">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <span>Movimientos</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="mb-4">
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                Movimientos de Inventario
+                    <ion-icon name="arrow-up-circle-outline"></ion-icon>
+                    Salidas
+                </button>
+            </div>
+        </div>
+
+        <!-- Entries Tab -->
+        <div id="entriesTab" class="tab-content active">
+            <div class="flex items-center justify-between mb-4">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--primary-900);">
+                    Entradas de Inventario
+                </h2>
+                <button class="btn btn-primary" onclick="MovementsApp.openEntryModal()">
+                    <ion-icon name="add-outline"></ion-icon>
+                    Nueva Entrada
+                </button>
+            </div>
+            
+            <div class="card">
+                <div id="entriesTableContainer">
+                    <div class="spinner" style="margin: 2rem auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exits Tab -->
+        <div id="exitsTab" class="tab-content" style="display: none;">
+            <div class="flex items-center justify-between mb-4">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: var(--primary-900);">
+                    Salidas de Inventario
+                </h2>
+                <button class="btn btn-accent" onclick="MovementsApp.openExitModal()">
+                    <ion-icon name="add-outline"></ion-icon>
+                    Nueva Salida
+                </button>
+            </div>
+            
+            <div class="card">
+                <div id="exitsTableContainer">
+                    <div class="spinner" style="margin: 2rem auto;"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Entry Modal -->
+    <div class="modal-overlay" id="entryModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Nueva Entrada</h2>
+                <button class="modal-close" onclick="MovementsApp.closeEntryModal()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="entryForm">
+                    <div class="form-group">
+                        <label class="form-label">Producto *</label>
+                        <select class="form-select" id="entryProduct" required onchange="MovementsApp.loadProductSizes('entry')">
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Talla *</label>
+                            <select class="form-select" id="entrySize" required>
+                                <option value="">Seleccionar talla...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Cantidad *</label>
+                            <input type="number" class="form-input" id="entryQuantity" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Costo Unitario</label>
+                        <input type="number" class="form-input" id="entryCost" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fecha de Entrada *</label>
+                        <input type="datetime-local" class="form-input" id="entryDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notas</label>
+                        <textarea class="form-textarea" id="entryNotes" placeholder="Información adicional..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="MovementsApp.closeEntryModal()">
+                    Cancelar
+                </button>
+                <button type="submit" form="entryForm" class="btn btn-primary">
+                    <ion-icon name="save-outline"></ion-icon>
+                    Registrar Entrada
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Modal -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Nueva Salida</h2>
+                <button class="modal-close" onclick="MovementsApp.closeExitModal()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="exitForm">
+                    <div class="form-group">
+                        <label class="form-label">Producto *</label>
+                        <select class="form-select" id="exitProduct" required onchange="MovementsApp.loadProductSizes('exit')">
+                            <option value="">Seleccionar producto...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Talla *</label>
+                            <select class="form-select" id="exitSize" required onchange="MovementsApp.checkStock()">
+                                <option value="">Seleccionar talla...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Cantidad *</label>
+                            <input type="number" class="form-input" id="exitQuantity" min="1" required onchange="MovementsApp.checkStock()">
+                            <small id="stockInfo" style="color: #64748b; font-size: 0.75rem;"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Precio de Venta</label>
+                        <input type="number" class="form-input" id="exitSalePrice" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fecha de Salida *</label>
+                        <input type="datetime-local" class="form-input" id="exitDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notas</label>
+                        <textarea class="form-textarea" id="exitNotes" placeholder="Información adicional..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="MovementsApp.closeExitModal()">
+                    Cancelar
+                </button>
+                <button type="submit" form="exitForm" class="btn btn-accent">
+                    <ion-icon name="save-outline"></ion-icon>
+                    Registrar Salida
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/movements.js"></script>
+    
+    <script>
+        // Toggle sidebar en móvil
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
+    
+    <style>
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-900);
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-900);
+            border-bottom-color: var(--accent-600);
+        }
+        
+        .tab-btn ion-icon {
+            font-size: 1.25rem;
+        }
+        
+        .tab-content {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body>
+</html>

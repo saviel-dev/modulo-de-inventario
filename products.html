@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - YuzApp</title>
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button class="menu-toggle" id="menuToggle">
+        <ion-icon name="menu-outline"></ion-icon>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">
+                <ion-icon name="shirt-outline"></ion-icon>
+                YuzApp
+            </h1>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="index.html" class="sidebar-link">
+                <ion-icon name="stats-chart-outline"></ion-icon>
+                <span>Dashboard</span>
+            </a>
+            <a href="products.html" class="sidebar-link active">
+                <ion-icon name="cube-outline"></ion-icon>
+                <span>Productos</span>
+            </a>
+            <a href="movements.html" class="sidebar-link">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <span>Movimientos</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 style="font-size: 2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                    Gestión de Productos
+                </h1>
+                <p style="color: #64748b;">Administra el catálogo de playeras y sus tallas</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-secondary btn-sm" onclick="ProductsApp.openTypesModal()">
+                    <ion-icon name="list-outline"></ion-icon>
+                    Tipos
+                </button>
+                <button class="btn btn-accent btn-sm" onclick="ProductsApp.exportData('excel')">
+                    <ion-icon name="download-outline"></ion-icon>
+                    Excel
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="ProductsApp.exportData('pdf')">
+                    <ion-icon name="document-outline"></ion-icon>
+                    PDF
+                </button>
+                <button class="btn btn-primary" onclick="ProductsApp.openProductModal()">
+                    <ion-icon name="add-outline"></ion-icon>
+                    Nuevo Producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="card">
+            <div id="productsTableContainer">
+                <div class="spinner" style="margin: 2rem auto;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal" style="max-width: 650px;">
+            <div class="modal-header">
+                <h2 class="modal-title" id="productModalTitle">Nuevo Producto</h2>
+                <button class="modal-close" onclick="ProductsApp.closeProductModal()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <input type="hidden" id="productId">
+                    <input type="hidden" id="productDescription">
+                    <input type="hidden" id="productSku">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Producto *</label>
+                            <input type="text" class="form-input" id="productName" required placeholder="Ej: Playera México">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tipo *</label>
+                            <select class="form-select" id="productType" required>
+                                <option value="">Seleccionar...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <h3 style="font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0.75rem; color: var(--primary-900);">
+                        Inventario por Talla
+                    </h3>
+                    
+                    <div id="sizesContainer">
+                        <!-- Size inputs will be generated here -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="ProductsApp.closeProductModal()">
+                    Cancelar
+                </button>
+                <button type="submit" form="productForm" class="btn btn-primary">
+                    <ion-icon name="save-outline"></ion-icon>
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Types Modal -->
+    <div class="modal-overlay" id="typesModal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Tipos de Productos</h2>
+                <button class="modal-close" onclick="ProductsApp.closeTypesModal()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nuevo Tipo</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" class="form-input" id="newTypeName" placeholder="Ej: Edición Especial">
+                        <button class="btn btn-primary" onclick="ProductsApp.addType()">
+                            <ion-icon name="add-outline"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="typesListContainer">
+                    <!-- Types list will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/products.js"></script>
+    
+    <script>
+        // Toggle sidebar en móvil
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

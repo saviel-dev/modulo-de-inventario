@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - YuzApp</title>
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!-- Ionicons -->
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button class="menu-toggle" id="menuToggle">
+      <ion-icon name="menu-outline"></ion-icon>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1 class="sidebar-title">
+          <ion-icon name="shirt-outline"></ion-icon>
+                YuzApp
+        </h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="sidebar-link active">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          <span>Dashboard</span>
+        </a>
+        <a href="products.html" class="sidebar-link">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Productos</span>
+        </a>
+        <a href="movements.html" class="sidebar-link">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          <span>Movimientos</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <div class="mb-4">
+        <h1
+          style="
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: 0.5rem;
+          "
+        >
+          Dashboard
+        </h1>
+        <p style="color: #64748b">
+          Bienvenido al sistema de control de inventario
+        </p>
+      </div>
+
+      <!-- Metrics Cards -->
+      <div id="metricsContainer" class="grid grid-cols-4 gap-4 mb-4">
+        <!-- Metrics will be loaded here -->
+        <div class="card">
+          <div class="spinner" style="margin: 0 auto"></div>
+        </div>
+      </div>
+
+      <!-- Low Stock Alert -->
+      <div class="card mb-4">
+        <h2 class="card-title">
+          <ion-icon
+            name="warning-outline"
+            style="
+              vertical-align: middle;
+              margin-right: 0.5rem;
+              color: var(--warning);
+            "
+          ></ion-icon>
+          Productos con Stock Bajo
+        </h2>
+        <div id="lowStockContainer">
+          <div class="spinner" style="margin: 2rem auto"></div>
+        </div>
+      </div>
+
+      <!-- Recent Movements -->
+      <div class="card">
+        <h2 class="card-title">
+          <ion-icon
+            name="time-outline"
+            style="
+              vertical-align: middle;
+              margin-right: 0.5rem;
+              color: var(--info);
+            "
+          ></ion-icon>
+          Movimientos Recientes
+        </h2>
+        <div id="recentMovementsContainer">
+          <div class="spinner" style="margin: 2rem auto"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/dashboard.js"></script>
+
+    <script>
+      // Toggle sidebar en móvil
+      const menuToggle = document.getElementById("menuToggle");
+      const sidebar = document.getElementById("sidebar");
+
+      menuToggle.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+      });
+
+      // Cerrar sidebar al hacer click fuera (móvil)
+      document.addEventListener("click", (e) => {
+        if (window.innerWidth <= 768) {
+          if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            sidebar.classList.remove("active");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
